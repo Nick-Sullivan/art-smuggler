@@ -1,0 +1,5 @@
+*.png
+*.jpg
+uv.lock
+**__pycache__/
+**node_modules/

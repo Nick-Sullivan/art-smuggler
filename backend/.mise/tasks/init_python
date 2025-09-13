@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+#MISE description="Install python dependencies in a virtual environment"
+#MISE alias="ip"
+set -e
+uv venv --allow-existing
+uv sync
+uv pip install -e .
