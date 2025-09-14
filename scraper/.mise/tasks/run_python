@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+#MISE alias="rp"
+set -e
+python scripts/run.py

@@ -1,0 +1,22 @@
+[project]
+name = "leonardo-ui-interactor"
+version = "0.1.0"
+description = "A project for interacting with Lenoardo AI UI"
+authors = [
+    {name = "Nick Sullivan", email = "nick.dave.sullivan@gmail.com"}
+]
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "patchright==1.55.1",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/leonardo_ui_interactor"]
+
+[tool.uv]
+dev-dependencies = []

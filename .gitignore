@@ -3,3 +3,4 @@
 uv.lock
 **__pycache__/
 **node_modules/
+session.json

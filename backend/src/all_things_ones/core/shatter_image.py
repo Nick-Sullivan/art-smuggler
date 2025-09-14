@@ -1,6 +1,7 @@
 import random
 
 import numpy as np
+from scipy.spatial import cKDTree
 
 
 def shatter_image(
@@ -8,21 +9,48 @@ def shatter_image(
     num_pieces: int = 15,
     num_images: int = 2,
     seed: int = None,
-    background_color: float = 0.6,  # Changed to float for 0-1 range
+    background_color: float = 0.6,
 ) -> list[np.ndarray]:
     """
     Split image into irregular pieces like a shattered windshield, then distribute across multiple images.
-
-    Args:
-        target: Input image array (0-1 range)
-        num_pieces: Number of shattered pieces to create
-        num_images: Number of output images to distribute pieces across
-        seed: Random seed for reproducible results
-        background_color: Background color value (0-1 range)
-
-    Returns:
-        List of composite images, each containing some of the pieces
     """
+    pieces = shatter_into_pieces(target, num_pieces=num_pieces, seed=seed)
+    height, width, channels = target.shape
+
+    # Distribute pieces across images
+    distributed_images = [[] for _ in range(num_images)]
+
+    # Strategy: distribute pieces as evenly as possible
+    for i, piece in enumerate(pieces):
+        target_image = i % num_images
+        distributed_images[target_image].append(piece)
+
+    # Create composite images
+    composite_images = []
+    for pieces_list in distributed_images:
+        if not pieces_list:
+            continue
+
+        # Create composite by combining all pieces for this image
+        composite = np.full(
+            (height, width, channels), background_color, dtype=target.dtype
+        )
+
+        for piece in pieces_list:
+            # Where piece has alpha > 0, use the piece's color
+            alpha_mask = piece[:, :, -1] > 0
+            composite[alpha_mask] = piece[alpha_mask, :channels]
+
+        composite_images.append(composite)
+
+    return composite_images
+
+
+def shatter_into_pieces(
+    target: np.ndarray,
+    num_pieces: int = 15,
+    seed: int = None,
+) -> list[np.ndarray]:
     if seed is not None:
         np.random.seed(seed)
         random.seed(seed)
@@ -49,72 +77,53 @@ def shatter_image(
         y = np.random.uniform(0, height)
         points.append([x, y])
 
-    # Add boundary points to ensure full coverage
-    margin = 50
-    boundary_points = [
-        [-margin, -margin],
-        [width // 2, -margin],
-        [width + margin, -margin],
-        [-margin, height // 2],
-        [width + margin, height // 2],
-        [-margin, height + margin],
-        [width // 2, height + margin],
-        [width + margin, height + margin],
-    ]
-    points.extend(boundary_points)
+    # Only use the first num_pieces points (no boundary points for speed)
+    points = np.array(points[:num_pieces])
 
-    points = np.array(points)
+    # Use KDTree for extremely fast nearest neighbor lookup
+    tree = cKDTree(points)
 
-    # Create coordinate arrays
-    y_coords, x_coords = np.meshgrid(np.arange(height), np.arange(width), indexing="ij")
-    coords = np.column_stack([x_coords.ravel(), y_coords.ravel()])
+    # Process in chunks to avoid memory issues
+    chunk_size = 1000000  # Process 1M pixels at a time
+    region_map = np.zeros((height, width), dtype=np.int32)
 
-    # Assign each pixel to closest Voronoi point (only consider first num_pieces points)
-    distances = np.sqrt(
-        ((coords[:, np.newaxis, :] - points[np.newaxis, :num_pieces, :]) ** 2).sum(
-            axis=2
-        )
-    )
-    closest_point = np.argmin(distances, axis=1)
-    region_map = closest_point.reshape(height, width)
+    total_pixels = height * width
 
-    # Create all pieces first
+    for start_idx in range(0, total_pixels, chunk_size):
+        end_idx = min(start_idx + chunk_size, total_pixels)
+        chunk_length = end_idx - start_idx
+
+        # Convert flat indices to 2D coordinates for this chunk
+        flat_indices = np.arange(start_idx, end_idx)
+        y_coords = flat_indices // width
+        x_coords = flat_indices % width
+
+        # Create coordinate pairs for this chunk
+        chunk_coords = np.column_stack([x_coords, y_coords])
+
+        # Query KDTree for nearest points (much faster than manual distance calc)
+        _, closest_indices = tree.query(chunk_coords)
+
+        # Convert back to 2D coordinates and assign
+        chunk_y = y_coords
+        chunk_x = x_coords
+        region_map[chunk_y, chunk_x] = closest_indices
+
+    # Create all pieces
     all_pieces = []
     for piece_idx in range(num_pieces):
         # Create mask for this piece
         mask = region_map == piece_idx
 
-        # Create piece with alpha channel (alpha still 0-1 range)
-        piece = np.zeros((height, width, channels + 1), dtype=target.dtype)
-        piece[mask, :channels] = target[mask]
-        piece[mask, channels] = 1.0  # Alpha channel (1.0 for opaque)
-
-        all_pieces.append((piece_idx, piece))
-
-    # Distribute pieces across images
-    distributed_images = [[] for _ in range(num_images)]
-
-    # Strategy: distribute pieces as evenly as possible
-    for i, (piece_idx, piece) in enumerate(all_pieces):
-        target_image = i % num_images
-        distributed_images[target_image].append(piece)
-
-    # Create composite images
-    composite_images = []
-    for pieces in distributed_images:
-        if not pieces:
+        # Skip empty pieces
+        if not np.any(mask):
             continue
 
-        # Create composite by combining all pieces for this image
-        composite = np.full(
-            (height, width, channels), background_color, dtype=target.dtype
-        )
+        # Create piece with alpha channel
+        piece = np.zeros((height, width, channels + 1), dtype=target.dtype)
+        piece[mask, :channels] = target[mask]
+        piece[mask, channels] = 1.0  # Alpha channel
 
-        for piece in pieces:
-            # Where piece has alpha > 0, use the piece's color
-            alpha_mask = piece[:, :, -1] > 0
-            composite[alpha_mask] = piece[alpha_mask, :channels]
+        all_pieces.append(piece)
 
-        composite_images.append(composite)
-
-    return composite_images
+    return all_pieces
