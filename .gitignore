@@ -6,3 +6,4 @@ uv.lock
 session.json
 **.cache/
 *.prof
+**dist/

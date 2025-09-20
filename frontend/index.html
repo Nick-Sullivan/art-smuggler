@@ -23,8 +23,8 @@
         }
         
         .draggable-image {
-            width: 350px;
-            height: 350px;
+            width: 600px;
+            height: 600px;
             user-select: none;
             transition: box-shadow 0.2s;
             background-size: contain;
@@ -66,13 +66,17 @@
 <body>
     <h1>Interactive Projector</h1>
     <div class="instructions">
-        <button id="center-images-btn">Move All Images to Center</button>
+        <button id="center-images-btn">Stack Images</button>
     </div>
     <div id="projector-container">
-        <div class="draggable-image" style="background-image: url('./data/003/cat_1.png');"></div>
-        <div class="draggable-image" style="background-image: url('./data/003/cat_2.png');"></div>
-        <div class="draggable-image" style="background-image: url('./data/003/cat_3.png');"></div>
-        <div class="draggable-image" style="background-image: url('./data/003/cat_4.png');"></div>
+        <div class="draggable-image" style="background-image: url('./data/005_london/output_image_0.png');"></div>
+        <div class="draggable-image" style="background-image: url('./data/005_london/output_image_1.png');"></div>
+        <div class="draggable-image" style="background-image: url('./data/005_london/output_image_2.png');"></div>
+        <div class="draggable-image" style="background-image: url('./data/005_london/output_image_3.png');"></div>
+     <!-- <div class="draggable-image" style="background-image: url('./data/sym/output_image_0.png');"></div>
+     <div class="draggable-image" style="background-image: url('./data/sym/output_image_1.png');"></div>
+     <div class="draggable-image" style="background-image: url('./data/sym/output_image_2.png');"></div>
+     <div class="draggable-image" style="background-image: url('./data/sym/output_image_3.png');"></div> -->
     </div>
 
     <script type="module" src="/src/main.ts"></script>
