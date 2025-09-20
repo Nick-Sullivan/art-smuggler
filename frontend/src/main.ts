@@ -11,7 +11,7 @@ class ProjectorEffect {
   constructor(containerId: string) {
     this.container = document.getElementById(containerId)!;
     this.blendCanvas = this.setupCanvas();
-    this.setupCenterButton();
+    this.setupStackButton();
     this.init().catch(console.error);
   }
 
@@ -21,10 +21,10 @@ class ProjectorEffect {
     this.updateCanvas();
   }
 
-  private setupCenterButton(): void {
+  private setupStackButton(): void {
     const button = document.getElementById("center-images-btn");
     if (button) {
-      button.addEventListener("click", () => this.centerAllImages());
+      button.addEventListener("click", () => this.stackImages());
     }
   }
 
@@ -76,16 +76,12 @@ class ProjectorEffect {
     }
   }
 
-  private centerAllImages(): void {
-    const containerRect = this.container.getBoundingClientRect();
-    const centerX = containerRect.width / 2 - 175; // 175 is half of image width (350px)
-    const centerY = containerRect.height / 2 - 175; // 175 is half of image height (350px)
-
+  private stackImages(): void {
     this.images.forEach((draggableImage) => {
-      draggableImage.currentX = centerX;
-      draggableImage.currentY = centerY;
-      draggableImage.element.style.left = `${centerX}px`;
-      draggableImage.element.style.top = `${centerY}px`;
+      draggableImage.currentX = 0;
+      draggableImage.currentY = 0;
+      draggableImage.element.style.left = `0px`;
+      draggableImage.element.style.top = `0px`;
     });
 
     this.updateCanvas();
