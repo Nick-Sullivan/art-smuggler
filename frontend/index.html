@@ -13,10 +13,18 @@
             color: white;
         }
         
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
         #projector-container {
             position: relative;
             width: calc(100vw-40px);
-            height: 80vh;
+            height: calc(100vh - 120px);
             background-color: white;
             border: 2px solid #444;
             overflow: hidden;
@@ -37,14 +45,7 @@
         }
         
         h1 {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-        
-        .instructions {
-            text-align: center;
-            margin-bottom: 20px;
-            color: #ccc;
+            margin: 0;
         }
 
         #center-images-btn {
@@ -64,8 +65,8 @@
     </style>
 </head>
 <body>
-    <h1>Interactive Projector</h1>
-    <div class="instructions">
+    <div class="header">
+        <h1>Interactive Projector</h1>
         <button id="center-images-btn">Stack Images</button>
     </div>
     <div id="projector-container">
