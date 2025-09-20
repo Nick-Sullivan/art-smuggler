@@ -3,7 +3,13 @@ import { DragHandler } from "./interaction/dragHandler.js";
 import { DraggableImage } from "./types.js";
 import { loadImageData } from "./utils/loadImageData.js";
 
+import image0 from './data/005_london/output_image_0.png';
+import image1 from './data/005_london/output_image_1.png';
+import image2 from './data/005_london/output_image_2.png';
+import image3 from './data/005_london/output_image_3.png';
+
 class ProjectorEffect {
+  private imageUrls = [image0, image1, image2, image3];
   private images: DraggableImage[] = [];
   private container: HTMLElement;
   private blendCanvas: HTMLCanvasElement;
@@ -44,7 +50,7 @@ class ProjectorEffect {
 
     for (let index = 0; index < imageElements.length; index++) {
       const img = imageElements[index] as HTMLElement;
-
+      img.style.backgroundImage = `url(${this.imageUrls[index]})`;
       const maxX = containerWidth - 350; // 350 is image width
       const maxY = containerHeight - 350; // 350 is image height
       const spacingX = Math.min(
