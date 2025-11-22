@@ -58,34 +58,9 @@
             border-radius: 5px;
             transition: background-color 0.3s;
         }
-        #mode-toggle-btn {
-            background-color: #2196F3;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            font-size: 16px;
-            cursor: pointer;
-            border-radius: 5px;
-            transition: background-color 0.3s;
-        }
-        #mode-toggle-btn:hover {
-            background-color: #0b7dda;
-        }
+
         #center-images-btn:hover {
             background-color: #45a049;
-        }
-        #background-toggle-btn {
-            background-color: #FF9800;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            font-size: 16px;
-            cursor: pointer;
-            border-radius: 5px;
-            transition: background-color 0.3s;
-        }
-        #background-toggle-btn:hover {
-            background-color: #e68900;
         }
     </style>
 </head>
@@ -93,15 +68,23 @@
     <div class="header">
         <h1>Interactive Projector</h1>
         <button id="center-images-btn">Stack Images</button>
-        <button id="mode-toggle-btn">Mode: Stack</button>
-        <button id="background-toggle-btn">Background: White</button>
     </div>
     <div id="projector-container">
         <div class="draggable-image" id="image-0"></div>
         <div class="draggable-image" id="image-1"></div>
         <div class="draggable-image" id="image-2"></div>
         <div class="draggable-image" id="image-3"></div>
+        <div class="draggable-image" id="image-4"></div>
+        <!-- <div class="draggable-image" style="background-image: url('./data/005_london/output_image_0.png');"></div>
+        <div class="draggable-image" style="background-image: url('./data/005_london/output_image_1.png');"></div>
+        <div class="draggable-image" style="background-image: url('./data/005_london/output_image_2.png');"></div>
+        <div class="draggable-image" style="background-image: url('./data/005_london/output_image_3.png');"></div> -->
+     <!-- <div class="draggable-image" style="background-image: url('./data/sym/output_image_0.png');"></div>
+     <div class="draggable-image" style="background-image: url('./data/sym/output_image_1.png');"></div>
+     <div class="draggable-image" style="background-image: url('./data/sym/output_image_2.png');"></div>
+     <div class="draggable-image" style="background-image: url('./data/sym/output_image_3.png');"></div> -->
     </div>
-    <script type="module" src="/src/main.ts"></script>
+
+    <script type="module" src="/src/mainProjector.ts"></script>
 </body>
 </html>

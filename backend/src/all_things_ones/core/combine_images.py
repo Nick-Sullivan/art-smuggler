@@ -16,12 +16,4 @@ def combine_images(images: list[np.ndarray]) -> np.ndarray:
     """
     if not images:
         raise ValueError("No images to combine")
-
-    # Start with white (all 1s) for multiplicative blending
-    combined = np.ones_like(images[0])
-
-    # Multiply all images together
-    for img in images:
-        combined *= img
-
-    return combined
+    return np.prod(images, axis=0)

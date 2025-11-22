@@ -1,6 +1,6 @@
 import { DraggableImage } from "../types.js";
 
-export function renderBlendedCanvas(
+export function renderStackedCanvas(
   canvas: HTMLCanvasElement,
   images: DraggableImage[],
   container: HTMLElement
@@ -15,9 +15,12 @@ export function renderBlendedCanvas(
   canvas.width = container.clientWidth;
   canvas.height = container.clientHeight;
   const ctx = canvas.getContext("2d")!;
-  ctx.fillStyle = "white";
+
+  const bgColor = window.getComputedStyle(container).backgroundColor;
+  ctx.fillStyle = bgColor || "white";
   ctx.fillRect(0, 0, canvas.width, canvas.height);
-  ctx.globalCompositeOperation = "multiply";
+
+  ctx.globalCompositeOperation = "source-over";
   for (const image of images) {
     const imageRect = image.element.getBoundingClientRect();
     const containerRect = container.getBoundingClientRect();

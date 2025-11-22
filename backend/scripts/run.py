@@ -4,19 +4,19 @@ import time
 
 import numpy as np
 
-from all_things_ones.core.adjust_image_brightness import adjust_image_brightness
-from all_things_ones.core.brighten_image import brighten_image
-from all_things_ones.core.combine_images import combine_images
-from all_things_ones.core.resize_image import resize_image
-from all_things_ones.files.clear_files import clear_files
-from all_things_ones.files.load_image import load_image
-from all_things_ones.files.save_image import SaveType, save_image
-from all_things_ones.shatter.shatter_image_with_cache import shatter_image_with_cache
+from all_things_ones.core import (
+    adjust_image_brightness,
+    brighten_image,
+    combine_images,
+    resize_image,
+)
+from all_things_ones.files import SaveType, clear_files, load_image, save_image
+from all_things_ones.shatter import shatter_image_with_cache
 
-target_file = "data/input/target/london.png"
+target_file = "data/input/target/gandalf.jpg"
 seed_folder = "data/input/seed/005_london"
 seed = 1
-seed_suffix = "2"
+seed_suffix = "1"
 num_images = 4
 num_pieces = 500
 img_size = 2000
