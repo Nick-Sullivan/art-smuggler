@@ -1,4 +1,4 @@
-import { DraggableImage } from "../types.js";
+import { DraggableImage } from "../hooks/useDraggable";
 
 export async function loadImageData(
   draggableImage: DraggableImage

@@ -1,0 +1,42 @@
+.projector-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+.projector-header h1 {
+  margin: 0;
+}
+
+.projector-container {
+  position: relative;
+  width: calc(100vw - 40px);
+  height: calc(100vh - 120px);
+  border: 2px solid #444;
+  overflow: hidden;
+  transition: background-color 0.3s;
+}
+
+.projector-canvas {
+  position: absolute;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.draggable-image {
+  width: 600px;
+  height: 600px;
+  position: absolute;
+  cursor: grab;
+  user-select: none;
+  transition: box-shadow 0.2s;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+.draggable-image:hover {
+  box-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
+}

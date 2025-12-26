@@ -1,7 +1,7 @@
 import numpy as np
 from scipy.ndimage import binary_dilation, rotate
 
-from all_things_ones.files import SaveType, save_image
+from all_things_ones.repository.files import SaveType, save_image
 
 
 def inpaint(canvases, trans_images, num_images: int, img_size: int):
@@ -48,8 +48,9 @@ def inpaint(canvases, trans_images, num_images: int, img_size: int):
     # Create final RGB output (no alpha channel)
     final_output = combined[:, :, :3]
     save_image(final_output, "final_output.png", image_type=SaveType.DEBUG)
+    print("Finished inpainting process.")
 
-    return final_output
+    return processed_layers, final_output
 
 
 def generate_seeds(canvases: list[np.ndarray], num_images: int) -> list[np.ndarray]:

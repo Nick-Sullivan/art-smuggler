@@ -1,11 +1,16 @@
 import numpy as np
 
-from all_things_ones.core import (
+from all_things_ones.logic.core import (
     resize_image,
 )
-from all_things_ones.files import SaveType, clear_files, load_image, save_image
-from all_things_ones.inpainting import inpaint
-from all_things_ones.segmentation import segment_by_frequency
+from all_things_ones.logic.inpainting import inpaint
+from all_things_ones.logic.segmentation import segment_by_frequency
+from all_things_ones.repository.files import (
+    SaveType,
+    clear_files,
+    load_image,
+    save_image,
+)
 
 target_file = "data/input/target/mish.png"
 num_images = 4

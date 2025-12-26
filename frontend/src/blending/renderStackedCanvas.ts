@@ -1,9 +1,10 @@
-import { DraggableImage } from "../types.js";
+import { DraggableImage } from "../hooks/useDraggable";
 
 export function renderStackedCanvas(
   canvas: HTMLCanvasElement,
   images: DraggableImage[],
-  container: HTMLElement
+  container: HTMLElement,
+  bgColor: string
 ): void {
   if (images.length === 0) {
     canvas.style.display = "none";
@@ -16,8 +17,7 @@ export function renderStackedCanvas(
   canvas.height = container.clientHeight;
   const ctx = canvas.getContext("2d")!;
 
-  const bgColor = window.getComputedStyle(container).backgroundColor;
-  ctx.fillStyle = bgColor || "white";
+  ctx.fillStyle = bgColor;
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
   ctx.globalCompositeOperation = "source-over";

@@ -5,7 +5,7 @@
       "name": "Run",
       "type": "debugpy",
       "request": "launch",
-      "program": "scripts/run.py",
+      "program": "scripts/run_experiment.py",
       "console": "integratedTerminal"
     },
     {

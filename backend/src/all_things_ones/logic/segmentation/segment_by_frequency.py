@@ -1,7 +1,7 @@
 import numpy as np
 
-from all_things_ones.core import low_pass_filter
-from all_things_ones.files import SaveType, save_image
+from all_things_ones.logic.core import low_pass_filter
+from all_things_ones.repository.files import SaveType, save_image
 
 
 def segment_by_frequency(target_img, canvases, num_images: int, img_size: int):
