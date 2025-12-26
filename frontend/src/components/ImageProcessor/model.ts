@@ -1,7 +1,7 @@
 export interface ImageProcessorViewModel {
   formData: ImageFormData;
   healthResponse: string;
-  processResponse: string;
+  processResponse: ProcessMessage[];
   isProcessing: boolean;
   isComplete: boolean;
   resultImageUrls: Record<number, string>;
@@ -10,6 +10,11 @@ export interface ImageProcessorViewModel {
   handleInputChange: (id: string, value: number) => void;
   handleSubmit: () => Promise<void>;
   handleViewInProjector: () => void;
+}
+
+export interface ProcessMessage {
+  message: string;
+  timestamp: string;
 }
 
 export interface ImageFormData {

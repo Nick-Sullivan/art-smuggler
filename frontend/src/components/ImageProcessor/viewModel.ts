@@ -6,12 +6,13 @@ import {
   ImageFormData,
   ImageProcessorViewModel,
   MAX_FILE_SIZE,
+  ProcessMessage,
 } from "./model";
 
 export function useImageProcessorViewModel(): ImageProcessorViewModel {
   const [formData, setFormData] = useState<ImageFormData>(DEFAULT_FORM_DATA);
   const [healthResponse, setHealthResponse] = useState("");
-  const [processResponse, setProcessResponse] = useState("");
+  const [processResponse, setProcessResponse] = useState<ProcessMessage[]>([]);
   const [isProcessing, setIsProcessing] = useState(false);
   const [isComplete, setIsComplete] = useState(false);
   const [resultImageUrls, setResultImageUrls] = useState<
@@ -64,7 +65,7 @@ export function useImageProcessorViewModel(): ImageProcessorViewModel {
 
     setIsProcessing(true);
     setIsComplete(false);
-    setProcessResponse("Starting image processing...");
+    setProcessResponse([]);
     setResultImageUrls({});
 
     try {
@@ -96,7 +97,13 @@ export function useImageProcessorViewModel(): ImageProcessorViewModel {
       await handleSSEStream(res, (type, data) => {
         switch (type) {
           case "status":
-            setProcessResponse(data.message);
+            setProcessResponse((prev) => [
+              ...prev,
+              {
+                message: data.message,
+                timestamp: data.timestamp,
+              },
+            ]);
             break;
 
           case "image":
@@ -105,10 +112,23 @@ export function useImageProcessorViewModel(): ImageProcessorViewModel {
               ...prev,
               [data.index]: url,
             }));
+            setProcessResponse((prev) => [
+              ...prev,
+              {
+                message: `Image ${data.index + 1} updated.`,
+                timestamp: new Date().toISOString(),
+              },
+            ]);
             break;
 
           case "complete":
-            setProcessResponse("Success! Image processed.");
+            setProcessResponse((prev) => [
+              ...prev,
+              {
+                message: "Finished.",
+                timestamp: new Date().toISOString(),
+              },
+            ]);
             setIsComplete(true);
             break;
 
@@ -120,7 +140,12 @@ export function useImageProcessorViewModel(): ImageProcessorViewModel {
         }
       });
     } catch (error) {
-      setProcessResponse(`Error: ${(error as Error).message}`);
+      setProcessResponse([
+        {
+          message: `Error: ${(error as Error).message}`,
+          timestamp: new Date().toISOString(),
+        },
+      ]);
     } finally {
       setIsProcessing(false);
     }

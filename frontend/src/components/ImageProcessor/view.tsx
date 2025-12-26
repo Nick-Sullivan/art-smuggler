@@ -26,6 +26,9 @@ export function ImageProcessorView({ viewModel }: ImageProcessorProps) {
   };
 
   const hasResults = Object.keys(viewModel.resultImageUrls).length > 0;
+  const uploadedImageUrl = viewModel.formData.targetFile
+    ? URL.createObjectURL(viewModel.formData.targetFile)
+    : null;
 
   return (
     <div className="image-processor">
@@ -42,51 +45,66 @@ export function ImageProcessorView({ viewModel }: ImageProcessorProps) {
       )}
 
       <h2>Process Image</h2>
-      <form className="process-form" onSubmit={onSubmit}>
-        <div className="form-group">
-          <label htmlFor="targetFile">Target Image:</label>
-          <input
-            type="file"
-            id="targetFile"
-            accept="image/*"
-            required
-            onChange={onFileChange}
-          />
+      <div className="form-container">
+        <form className="process-form" onSubmit={onSubmit}>
+          <div className="form-group">
+            <label htmlFor="targetFile">Target Image:</label>
+            <input
+              type="file"
+              id="targetFile"
+              accept="image/*"
+              required
+              onChange={onFileChange}
+            />
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="numImages">Number of Images:</label>
+            <input
+              type="number"
+              id="numImages"
+              value={viewModel.formData.numImages}
+              min="1"
+              onChange={onInputChange}
+            />
+          </div>
+
+          <button
+            type="submit"
+            className="submit-btn"
+            disabled={viewModel.isProcessing}
+          >
+            {viewModel.isProcessing ? "Processing..." : "Process Image"}
+          </button>
+        </form>
+
+        {uploadedImageUrl && (
+          <div className="uploaded-image-preview">
+            <img src={uploadedImageUrl} alt="Uploaded preview" />
+          </div>
+        )}
+      </div>
+
+      {viewModel.processResponse.length > 0 && (
+        <div className="response-display">
+          {viewModel.processResponse.map((msg, index) => {
+            const firstTimestamp = new Date(
+              viewModel.processResponse[0].timestamp
+            ).getTime();
+            const currentTimestamp = new Date(msg.timestamp).getTime();
+            const secondsElapsed = (
+              (currentTimestamp - firstTimestamp) /
+              1000
+            ).toFixed(2);
+
+            return (
+              <div key={index}>
+                <span style={{ color: "#888" }}>[{secondsElapsed}s]</span>{" "}
+                {msg.message}
+              </div>
+            );
+          })}
         </div>
-
-        <div className="form-group">
-          <label htmlFor="numImages">Number of Images:</label>
-          <input
-            type="number"
-            id="numImages"
-            value={viewModel.formData.numImages}
-            min="1"
-            onChange={onInputChange}
-          />
-        </div>
-
-        {/* <div className="form-group">
-          <label htmlFor="imgSize">Image Size:</label>
-          <input
-            type="number"
-            id="imgSize"
-            value={viewModel.formData.imgSize}
-            min="1"
-            onChange={onInputChange}
-          />
-        </div> */}
-
-        <button
-          type="submit"
-          className="submit-btn"
-          disabled={viewModel.isProcessing}
-        >
-          {viewModel.isProcessing ? "Processing..." : "Process Image"}
-        </button>
-      </form>
-
-      {viewModel.processResponse && (
-        <div className="response-display">{viewModel.processResponse}</div>
       )}
 
       {viewModel.isComplete && (

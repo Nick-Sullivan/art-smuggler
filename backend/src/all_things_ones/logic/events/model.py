@@ -11,11 +11,13 @@ class EventType(Enum):
 
 class MessageEventData(TypedDict):
     message: str
+    timestamp: str
 
 
 class ImageEventData(TypedDict):
     image: str
     index: int
+    timestamp: str
 
 
 EventData = Union[MessageEventData, ImageEventData]

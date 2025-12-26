@@ -5,52 +5,75 @@ from all_things_ones.repository.files import SaveType, save_image
 
 
 def inpaint(canvases, trans_images, num_images: int, img_size: int):
-    seeds = generate_seeds(canvases, num_images)
+    """
+    Inpaint canvases by generating seed patterns and yielding each processed layer.
 
-    processed_layers = []
+    Yields each processed layer (RGBA) as it's generated.
+    """
     for i in range(num_images):
         if i == num_images - 1:
-            processed_layers.append(canvases[i])
+            # Last canvas - yield as-is
+            save_image(canvases[i], f"canvas_filled_{i}.png", image_type=SaveType.DEBUG)
+            yield canvases[i]
             continue
+
+        # Generate seed on-demand for this specific canvas
+        print(f"Generating camouflage pattern for canvas {i}...")
+        seed = generate_single_seed(canvases[i], i, num_images)
 
         # Convert seed image to RGBA
         seed_with_alpha = np.zeros((img_size, img_size, 4), dtype=np.float32)
-        seed_with_alpha[:, :, :3] = seeds[i]
+        seed_with_alpha[:, :, :3] = seed
         seed_with_alpha[:, :, 3] = 1.0
 
-        if i > 0:
-            trans_idx = i - 1
-            # Where trans_mask has alpha>0 (opaque), make seed transparent (cut holes)
-            mask_to_apply = trans_images[trans_idx][:, :, 3] > 0
-            seed_with_alpha[mask_to_apply, 3] = 0.0
-            save_image(
-                seed_with_alpha, f"seed_with_holes_{i}.png", image_type=SaveType.DEBUG
-            )
+        # Apply the transparent mask for this layer
+        # Where trans_mask has alpha>0 (opaque), make seed transparent (cut holes)
+        mask_to_apply = trans_images[i][:, :, 3] > 0
+        seed_with_alpha[mask_to_apply, 3] = 0.0
+        save_image(
+            seed_with_alpha, f"seed_with_holes_{i}.png", image_type=SaveType.DEBUG
+        )
 
         # Overlay the canvas on top of the seed
         layer = np.copy(seed_with_alpha)
         canvas_mask = canvases[i][:, :, 3] > 0
         layer[canvas_mask] = canvases[i][canvas_mask]
 
-        processed_layers.append(layer)
-
-    for i, layer in enumerate(processed_layers):
         save_image(layer, f"canvas_filled_{i}.png", image_type=SaveType.DEBUG)
 
-    # Combine all layers - stack them and use the topmost opaque pixel
-    combined = np.zeros((img_size, img_size, 4), dtype=np.float32)
+        # Yield this layer immediately
+        print("yielding processed layer...")
+        yield layer
 
-    for layer in processed_layers:
-        # Where layer has alpha > 0, use it (later layers override earlier ones)
-        layer_mask = layer[:, :, 3] > 0
-        combined[layer_mask] = layer[layer_mask]
-
-    # Create final RGB output (no alpha channel)
-    final_output = combined[:, :, :3]
-    save_image(final_output, "final_output.png", image_type=SaveType.DEBUG)
     print("Finished inpainting process.")
 
-    return processed_layers, final_output
+
+def generate_single_seed(
+    canvas: np.ndarray, canvas_idx: int, num_images: int
+) -> np.ndarray:
+    np.random.seed(42 + canvas_idx)
+
+    # Choose technique based on canvas density
+    technique = choose_camouflage_technique(canvas)
+    print(f"  Using technique: {technique}")
+
+    if technique == "blob_duplication":
+        pattern = generate_camouflage_pattern(canvas, num_copies=40, min_blob_size=500)
+    elif technique == "fractal":
+        pattern = generate_fractal_pattern(canvas)
+    elif technique == "texture_synthesis":
+        pattern = generate_texture_synthesis(canvas, patch_size=50, num_patches=100)
+    else:  # noise
+        pattern = generate_organic_pattern(canvas, scale=150.0, detail=6)
+
+    # Add additional obfuscation
+    print("  Adding obfuscation layers...")
+    pattern = add_false_patterns(pattern, canvas)
+
+    save_image(
+        pattern, f"generated_pattern_{canvas_idx}.png", image_type=SaveType.DEBUG
+    )
+    return pattern
 
 
 def generate_seeds(canvases: list[np.ndarray], num_images: int) -> list[np.ndarray]:

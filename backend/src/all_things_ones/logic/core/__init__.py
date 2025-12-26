@@ -1,7 +1,7 @@
 from .add_corner_mark import add_corner_mark
 from .adjust_image_brightness import adjust_image_brightness
 from .brighten_image import brighten_image
-from .combine_images import combine_images
+from .combine_images import combine_images, combine_layers_by_transparency
 from .create_image import create_image
 from .create_paired_image import create_paired_image
 from .darken_image import darken_image, darken_image_pct
@@ -15,6 +15,7 @@ __all__ = [
     "adjust_image_brightness",
     "brighten_image",
     "combine_images",
+    "combine_layers_by_transparency",
     "create_image",
     "create_paired_image",
     "darken_image",

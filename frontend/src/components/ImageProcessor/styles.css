@@ -120,3 +120,35 @@
   border: 2px solid #444;
   border-radius: 5px;
 }
+
+
+.form-container {
+  display: flex;
+  gap: 30px;
+  align-items: flex-start;
+}
+
+.process-form {
+  flex: 0 0 500px;
+}
+
+.uploaded-image-preview {
+  flex: 1;
+  background-color: #2a2a2a;
+  padding: 20px;
+  border-radius: 5px;
+}
+
+.uploaded-image-preview h3 {
+  margin-top: 0;
+  margin-bottom: 15px;
+  color: #ccc;
+}
+
+.uploaded-image-preview img {
+  max-width: 100%;
+  max-height: 500px;
+  border: 2px solid #444;
+  border-radius: 5px;
+  display: block;
+}

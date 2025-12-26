@@ -6,11 +6,51 @@ interface ProjectorEffectProps {
 }
 
 export function ProjectorEffectView({ viewModel }: ProjectorEffectProps) {
+  const handleDownload = async () => {
+    // Create a temporary canvas to combine the images
+    const tempCanvas = document.createElement("canvas");
+    const ctx = tempCanvas.getContext("2d");
+    if (!ctx) return;
+
+    // Load all images
+    const imageElements = await Promise.all(
+      viewModel.imageUrls.map((url) => {
+        return new Promise<HTMLImageElement>((resolve, reject) => {
+          const img = new Image();
+          img.crossOrigin = "anonymous";
+          img.onload = () => resolve(img);
+          img.onerror = reject;
+          img.src = url;
+        });
+      })
+    );
+
+    // Set canvas size to match the images
+    const firstImg = imageElements[0];
+    tempCanvas.width = firstImg.width;
+    tempCanvas.height = firstImg.height;
+
+    // Draw all images on top of each other (combined)
+    imageElements.forEach((img) => {
+      ctx.drawImage(img, 0, 0);
+    });
+
+    // Download the combined image
+    const dataURL = tempCanvas.toDataURL("image/png");
+    const link = document.createElement("a");
+    link.href = dataURL;
+    link.download = `combined-images-${Date.now()}.png`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   return (
     <>
       <div className="projector-header">
         <h1>Interactive Projector</h1>
         <button onClick={viewModel.handleStackImages}>Stack Images</button>
+        <button onClick={handleDownload}>Download Combined Image</button>
         <button onClick={viewModel.handleToggleMode}>
           Mode:{" "}
           {viewModel.currentMode.charAt(0).toUpperCase() +
